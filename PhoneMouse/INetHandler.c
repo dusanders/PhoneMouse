@@ -7,6 +7,7 @@
 #include "INetHandler.h"
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <bits/socket.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <net/if.h>
@@ -23,7 +24,7 @@ char *ipStringWifi;
 char *ipStringLan;
 
 void *INetReceiveData(void *buffer) {
-	printf("Receiving data....");
+	printf("Receiving data....\n");
 	return 0;
 }
 
@@ -40,10 +41,10 @@ int INetServerThreadStart(char *receiveBuffer) {
 	//	if any returns.
 	if(pthread_create(&receiveThread, &attr,
 				&INetReceiveData, receiveBuffer) != 0) {
-		printf("Error creating server thread!");
+		printf("Error creating server thread!\n");
 		return -1;
 	}
-	printf("Receive Thread started....");
+	printf("Receive Thread started....\n");
 	return 1;
 }
 
@@ -54,7 +55,7 @@ int INetConnect(int desiredType) {
 	//	0 = System choose protocol (should default to UDP)...
 	inetSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if(inetSocket == -1 ) {
-		printf("Error creating Socket! Exiting...");
+		printf("Error creating Socket! Exiting...\n");
 		return -1;
 	}
 	printf("Opened socket...\n");

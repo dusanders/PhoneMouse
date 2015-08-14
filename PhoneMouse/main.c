@@ -14,16 +14,49 @@
 #include <stdlib.h>
 #include "INetHandler.h"
 
-int main(int argC, char* argVec[]) {
+#define ARG_WIFI "-wifi"
+#define ARG_LAN "-lan"
+#define ARG_CHG_FILE "-f"
+int main(int argC, char *argVec[]) {
 
-	if(INetConnect(TYPE_LAN) < 0) {
-		printf("Error opening socket!\n");
-	}
-	printf("%s", INetGetIp(TYPE_LAN));
 	char* SYSTEM_INPUT_FILE = "/dev/uinput";
 	FILE* inputFile;
 	struct uinput_user_dev uinputUser;
 	int dx,dy;
+
+	if(argC < 2) {
+		printf("Error! Invalid arguments!\n");
+		printf("./PhoneMouse [-wifi || -lan] || [-option]");
+		return -1;
+	}
+	if(strcmp(argVec[1], ARG_WIFI) != 0 ||
+			strcmp(argVec[1], ARG_LAN) != 0) {
+		printf("Error! Please specify -wifi or -lan\n");
+		return -1;
+	}
+
+	if(strcmp(argVec[1], ARG_WIFI) == 0) {
+		if(INetConnect(TYPE_WIFI) < 0) {
+			printf("Error opening socket!\n");
+		}
+		printf("%s\n", INetGetIp(TYPE_WIFI));
+	}
+	else if(strcmp(argVec[1], ARG_LAN) == 0) {
+		if(INetConnect(TYPE_LAN) < 0) {
+			printf("Error opening socket!\n");
+			return -1;
+		}
+		printf("%s\n", INetGetIp(TYPE_LAN));
+	}
+	else if(strcmp(argVec[1], ARG_CHG_FILE) == 0) {
+		if(argC < 3 || argC >3) {
+			printf("Error parsing arguments!\n");
+			printf("./PhoneMouse [-option] [file name]");
+			return -1;
+		}
+		printf("Changing SYSTEM_INPUT_FILE to %s\n", argVec[2]);
+		SYSTEM_INPUT_FILE = argVec[2];
+	}
 
 	if(argC > 1) {
 		char* validArg = "-f";
@@ -33,7 +66,7 @@ int main(int argC, char* argVec[]) {
 		}
 		else {
 			printf("Error with arguments!\n");
-			printf("Continuing.....");
+			printf("Continuing.....\n");
 		}
 	}
 	inputFile = fopen(SYSTEM_INPUT_FILE, "w");
