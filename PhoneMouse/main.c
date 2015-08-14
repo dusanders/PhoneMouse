@@ -14,10 +14,18 @@
 #include <stdlib.h>
 #include "INetHandler.h"
 
+<<<<<<< HEAD
 #define ARG_WIFI "-wifi"
 #define ARG_LAN "-lan"
 #define ARG_CHG_FILE "-f"
 int main(int argC, char *argVec[]) {
+=======
+
+
+
+
+int main(int argC, char* argVec[]) {
+>>>>>>> 7f7ca06d97371b3e62eed14164292990ba49b6fd
 
 	char* SYSTEM_INPUT_FILE = "/dev/uinput";
 	FILE* inputFile;
