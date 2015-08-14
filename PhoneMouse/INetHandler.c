@@ -5,26 +5,18 @@
  *      Author: zena-laptop
  */
 #include "INetHandler.h"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <bits/socket.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
-#include <net/if.h>
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <pthread.h>
-pthread_t receiveThread;
-int inetSocket;
-struct ifreq interfaceReq;
-struct sockaddr_in socketAddr;
-char *ipStringWifi;
-char *ipStringLan;
+
 
 void *INetReceiveData(void *buffer) {
 	printf("Receiving data....\n");
+	int bytesReceived;
+	while(1) {
+		bytesReceived = recv(inetSocket, buffer, BUFF_LEN, MSG_DONTWAIT);
+		if(bytesReceived > 0) {
+
+		printf("%d", bytesReceived);
+		}
+	}
 	return 0;
 }
 
@@ -49,7 +41,7 @@ int INetServerThreadStart(char *receiveBuffer) {
 }
 
 
-int INetConnect(int desiredType) {
+int INetConnect(int desiredType, char* buffer) {
 	//open a file descriptor from the System with a call to
 	// to 'socket' AF_INET = internet, SOCK_DGRAM = UDP,
 	//	0 = System choose protocol (should default to UDP)...
@@ -63,14 +55,9 @@ int INetConnect(int desiredType) {
 	//	System. 0 passed to port allows System to choose port.
 	//	INADDR_ANY allows the system to choose the IP address.
 	socketAddr.sin_family = AF_INET;
-	socketAddr.sin_port = htons(0);
+	socketAddr.sin_port = htons(6666);
 	socketAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	printf("Finished setup sockAddr...\n");
-	/***TODO: change this situation so there is no ambiguity for
-	 * which IP the system will use. current we pass ANY IP to the
-	 * sockaddr_in struct yet require the caller to specify an IP
-	 * to display to user...poor practice!
-	 */
 	//choose which IP to display....
 	if(desiredType == TYPE_WIFI) {
 		printf("Sending for TYPE_WIFI...\n");
@@ -94,15 +81,16 @@ int INetConnect(int desiredType) {
 	if(bind(inetSocket, (struct sockaddr *)&socketAddr, sizeof(socketAddr)) < 0) {
 		printf("Error binding socket and address\n");
 	}
+	printf("%s", inet_ntoa((struct in_addr)socketAddr.sin_addr));
 	printf("Finished binding...\n");
 	//open a buffer to pass to the server thread for receiving data.
-	char buffer[255];
 	printf("Calling to open sever thread.....\n");
 	//call our method to open a new thread.
 	INetServerThreadStart(buffer);
 	return 1;
 }
 void INetDisconnect() {
+	pthread_cancel(receiveThread);
 	close(inetSocket);
 }
 char* INetGetIp(int desiredType) {
