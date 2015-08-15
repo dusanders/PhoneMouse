@@ -28,15 +28,6 @@
 #define BUFF_LEN 255
 
 
-pthread_t receiveThread;
-int inetSocket;
-struct ifreq interfaceReq;
-struct sockaddr_in socketAddr;
-struct sockaddr_in clientAddr;
-char *ipStringWifi;
-char *ipStringLan;
-//int used to check for data...
-int DATA_READY;
 //struct for passing the data..
 struct INetDatagram {
 	int type;

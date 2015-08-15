@@ -7,14 +7,27 @@
 #include "INetHandler.h"
 
 
+pthread_t receiveThread;
+int inetSocket;
+struct ifreq interfaceReq;
+struct sockaddr_in socketAddr;
+struct sockaddr *clientAddr;
+socklen_t *fromLen;
+char *ipStringWifi;
+char *ipStringLan;
+//int used to check for data...
+int DATA_READY;
+
 void *INetReceiveData(void *buffer) {
 	printf("Receiving data....\n");
+	char *buff = buffer;
 	int bytesReceived;
 	while(1) {
-		bytesReceived = recv(inetSocket, buffer, BUFF_LEN, MSG_DONTWAIT);
+		bytesReceived = recvfrom(inetSocket, buffer, BUFF_LEN,
+				MSG_DONTWAIT, clientAddr, fromLen);
 		if(bytesReceived > 0) {
-
-		printf("%d", bytesReceived);
+			printf("%d", bytesReceived);
+			buff[0] = bytesReceived;
 		}
 	}
 	return 0;

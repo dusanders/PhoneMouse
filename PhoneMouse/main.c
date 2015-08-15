@@ -71,6 +71,8 @@ int main(int argC, char* argVec[]) {
 		printf("Error! Exiting....\n");
 		return -1;
 	}
+	buffer[0] = 0;
+
 	/*
 	 * INSERTING EVENTS INTO UINPUT
 	 */
@@ -129,7 +131,7 @@ int openSystemFile(char *SYSTEM_INPUT_FILE, FILE* inputFile,
 		struct uinput_user_dev uinputUser) {
 
 	inputFile = fopen(SYSTEM_INPUT_FILE, "w");
-	int fileRef = inputFile->_fileno;
+	int fileRef = fileno(inputFile);
 	if(inputFile == NULL) {
 		printf("Error opening %s\n", SYSTEM_INPUT_FILE);
 		return -1;
