@@ -15,19 +15,24 @@ struct sockaddr *clientAddr;
 socklen_t *fromLen;
 char *ipStringWifi;
 char *ipStringLan;
-//int used to check for data...
-int DATA_READY;
 
 void *INetReceiveData(void *buffer) {
 	printf("Receiving data....\n");
-	char *buff = buffer;
-	int bytesReceived;
+	//char *buff = buffer;
+	int recd;
+	INET_DATA_READY_FLAG = 0;
 	while(1) {
-		bytesReceived = recvfrom(inetSocket, buffer, BUFF_LEN,
+		recd = recvfrom(inetSocket, buffer, sizeof(buffer),
 				MSG_DONTWAIT, clientAddr, fromLen);
-		if(bytesReceived > 0) {
-			printf("%d", bytesReceived);
-			buff[0] = bytesReceived;
+
+		if(recd > 0) {
+			INET_DATA_READY_FLAG = 1;
+			recd = 0;
+			while(INET_DATA_READY_FLAG) {
+				/*	for thread safety, we must wait for consumer to
+				 * consume the buffer...
+				 */
+			}
 		}
 	}
 	return 0;
@@ -54,7 +59,7 @@ int INetServerThreadStart(char *receiveBuffer) {
 }
 
 
-int INetConnect(int desiredType, char* buffer) {
+int INetConnect(int desiredType, char *buffer) {
 	//open a file descriptor from the System with a call to
 	// to 'socket' AF_INET = internet, SOCK_DGRAM = UDP,
 	//	0 = System choose protocol (should default to UDP)...
@@ -79,6 +84,7 @@ int INetConnect(int desiredType, char* buffer) {
 		ioctl(inetSocket, SIOCGIFADDR, &interfaceReq);
 		ipStringWifi = inet_ntoa(((struct sockaddr_in *)
 				&interfaceReq.ifr_ifru.ifru_addr)->sin_addr);
+		//inet_aton(ipStringWifi, &socketAddr.sin_addr);
 	}
 	else if(desiredType == TYPE_LAN) {
 		printf("Sending for TYPE_LAN....\n");
@@ -94,7 +100,8 @@ int INetConnect(int desiredType, char* buffer) {
 	if(bind(inetSocket, (struct sockaddr *)&socketAddr, sizeof(socketAddr)) < 0) {
 		printf("Error binding socket and address\n");
 	}
-	printf("%s", inet_ntoa((struct in_addr)socketAddr.sin_addr));
+	printf("%s\n", inet_ntoa((struct in_addr)socketAddr.sin_addr));
+	printf("%d\n", socketAddr.sin_port);
 	printf("Finished binding...\n");
 	//open a buffer to pass to the server thread for receiving data.
 	printf("Calling to open sever thread.....\n");

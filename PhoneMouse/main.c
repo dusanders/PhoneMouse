@@ -18,7 +18,7 @@
 #define ARG_LAN "-lan"
 #define ARG_CHG_FILE "-f"
 
-#define BUFF_LEN 255
+#define BUFF_LEN 4
 
 char buffer[BUFF_LEN];
 
@@ -71,13 +71,22 @@ int main(int argC, char* argVec[]) {
 		printf("Error! Exiting....\n");
 		return -1;
 	}
-	buffer[0] = 0;
 
 	/*
 	 * INSERTING EVENTS INTO UINPUT
 	 */
 	struct input_event event;
 	int i;
+	memset(buffer, '0', sizeof(buffer));
+	while(1) {
+		if(INET_DATA_READY_FLAG) {
+			printf("Hello");
+			printf("%s\n", buffer);
+			//reset the data ready flag
+			INET_DATA_READY_FLAG = 0;
+		}
+	}
+	/*
 	while(scanf("%d %d", &dx, &dy)) {
 		printf("Moving to: dx: %d, dy: %d\n",dx,dy);
 		for(i=0; i<10;i++) {
@@ -109,6 +118,7 @@ int main(int argC, char* argVec[]) {
 				printf("Error writing event!\n");
 		}
 	}
+	*/
 	/*
 	memset(&event, 0, sizeof(struct input_event));
 	event.type = EV_KEY;

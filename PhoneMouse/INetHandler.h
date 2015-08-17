@@ -25,9 +25,8 @@
 #define TYPE_REL_X 0
 #define TYPE_REL_Y 1
 #define TYPE_KEY 2
-#define BUFF_LEN 255
 
-
+int INET_DATA_READY_FLAG;
 //struct for passing the data..
 struct INetDatagram {
 	int type;
@@ -35,7 +34,7 @@ struct INetDatagram {
 };
 void *INetReceiveData(void *buffer);
 int INetServerThreadStart(char *buffer);
-int INetConnect(int desiredType, char*buffer);
+int INetConnect(int desiredType, char *buffer);
 void INetDisconnect();
 char* INetGetIp();
 int INetSendInt(int value);
