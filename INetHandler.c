@@ -130,9 +130,13 @@ char* INetGetIp(int desiredType) {
 		return ipStringLan;
 	}
 }
-int INetSendInt(int value) {
-	return 0;
-}
-int INetSendString(char* string) {
-	return 0;
+int INetSend(char byteArray[]) {
+	socklen_t fromLen = sizeof(clientAddr);
+	printf("%d : %d", *byteArray, byteArray[0]);
+	if(sendto(inetSocket, byteArray, sizeof(byteArray),
+			0, (struct sockaddr *)&clientAddr, fromLen) < 0) {
+		printf("Error sending to client!\n");
+		return 0;
+	}
+	return 1;
 }

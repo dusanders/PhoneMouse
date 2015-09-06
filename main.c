@@ -20,7 +20,7 @@
 #define ARG_CHG_FILE "-f"
 #define MOUSE_EVENT 1
 #define KEYBOARD_EVENT 2
-#define QUERY 1
+#define QUERY_EVENT 3
 #define BUFF_LEN 5
 
 struct MouseEvent {
@@ -121,6 +121,10 @@ int main(int argC, char* argVec[]) {
 					}
 				}
 				keyboardKey(event, fileRef);
+			}
+			else if(buffer[0] == QUERY_EVENT) {
+				unsigned char response[] = {3};
+				INetSend(response);
 			}
 			memset(&buffer,0,sizeof(buffer));
 			INET_DATA_READY_FLAG = 0;

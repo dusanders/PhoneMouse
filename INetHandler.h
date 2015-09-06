@@ -30,6 +30,5 @@ int INetServerThreadStart(char buffer[]);
 int INetConnect(int desiredType, char buffer[]);
 void INetDisconnect();
 char* INetGetIp();
-int INetSendInt(int value);
-int INetSendString(char* string);
+int INetSend(char byteArray[]);
 #endif /* INETHANDLER_H_ */
